@@ -1,2 +1,4 @@
-# node-twitter
-# node-twitter
+# Run Project
+
+- npm install
+- npm run start

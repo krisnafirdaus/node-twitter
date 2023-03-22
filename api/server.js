@@ -27,17 +27,12 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session()); // Use passport.session() middleware
 
-const url =
-  process.env.NODE_ENV === "production"
-    ? "https://nodejs-twitter.vercel.app"
-    : "http://localhost:3001";
-
 passport.use(
   new TwitterStrategy(
     {
       consumerKey: process.env.TWITTER_CONSUMER_KEY,
       consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
-      callbackURL: url + "/auth/twitter/callback",
+      callbackURL: "http://localhost:3001/auth/twitter/callback",
     },
     async (token, tokenSecret, profile, done) => {
       // Create a TwitterClient instance with the user's token and tokenSecret
@@ -51,7 +46,7 @@ passport.use(
       // Check if the user follows the NASA account
       let followsNASA = false;
       try {
-        const result = await twitterClient.friendships?.show({
+        const result = await twitterClient.friendships.show({
           source_screen_name: profile.username,
           target_screen_name: "NASA",
         });
@@ -85,16 +80,13 @@ app.get(
   passport.authenticate("twitter", { failureRedirect: "/login" }),
   (req, res) => {
     res.redirect(
-      `${url}?token=${req.user.token}&tokenSecret=${req.user.tokenSecret}&followsNASA=${req.user.followsNASA}`
+      `http://localhost:3000?token=${req.user.token}&tokenSecret=${req.user.tokenSecret}&followsNASA=${req.user.followsNASA}`
     );
   }
 );
 
-if (process.env.VERCEL_ENV) {
-  module.exports = app;
-} else {
-  var port = process.env.PORT || 3001;
-  app.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
-  });
-}
+const PORT = process.env.PORT || 3001;
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
