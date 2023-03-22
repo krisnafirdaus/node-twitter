@@ -85,7 +85,14 @@ app.get(
   }
 );
 
-const PORT = process.env.PORT || 3001;
+if (process.env.VERCEL_ENV) {
+  module.exports = app;
+} else {
+  const port = process.env.PORT || 3001;
+  app.listen(port, () => {
+    console.log(`Server listening on port ${port}`);
+  });
+}
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
