@@ -27,12 +27,17 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session()); // Use passport.session() middleware
 
+const url =
+  process.env.NODE_ENV === "production"
+    ? "https://nodejs-twitter.vercel.app"
+    : "http://localhost:3001";
+
 passport.use(
   new TwitterStrategy(
     {
       consumerKey: process.env.TWITTER_CONSUMER_KEY,
       consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
-      callbackURL: "http://localhost:3001/auth/twitter/callback",
+      callbackURL: url + "/auth/twitter/callback",
     },
     async (token, tokenSecret, profile, done) => {
       // Create a TwitterClient instance with the user's token and tokenSecret
@@ -80,7 +85,7 @@ app.get(
   passport.authenticate("twitter", { failureRedirect: "/login" }),
   (req, res) => {
     res.redirect(
-      `http://localhost:3000?token=${req.user.token}&tokenSecret=${req.user.tokenSecret}&followsNASA=${req.user.followsNASA}`
+      `${url}?token=${req.user.token}&tokenSecret=${req.user.tokenSecret}&followsNASA=${req.user.followsNASA}`
     );
   }
 );
